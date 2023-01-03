@@ -1,0 +1,59 @@
+html {
+    padding: 2rem;
+}
+
+#toolkit{
+    padding-left: 1rem;
+    padding-right: 1rem;
+    overflow: hidden;
+}
+
+.card{
+    float: left;
+    margin-left: 2rem;
+    min-width:20rem;
+}
+
+@media screen and (min-width: 900px) {
+    .last-card {
+        min-width: 50rem
+    }
+    #audio-player {
+        width: 35rem;
+    }
+    #audio-container{
+        margin-left: 2rem;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .last-card {
+        min-width: 20rem
+    }
+    #audio-player {
+        width: 15rem;
+    }
+    #audio-container{
+        margin-left: 1rem;
+    }
+}
+
+.btn-set{
+    padding: 3rem;
+    display: flex;
+    justify-content:center;
+}
+
+.long-btn{
+    width:55rem;
+}
+
+#process-bar {
+    font-size: 20px;
+    margin-left: 2rem;
+}
+
+#footer{margin:2rem; padding-bottom:1rem; position: relative; top:10rem; width: 80%}
+#footer li{float:left;margin-right:1.5em;margin-bottom:1.5em}
+#footer p{margin-bottom:0;clear:left}
+

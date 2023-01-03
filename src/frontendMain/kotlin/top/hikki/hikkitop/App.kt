@@ -1,0 +1,180 @@
+package top.hikki.hikkitop
+
+import io.kvision.Application
+import io.kvision.CoreModule
+import io.kvision.core.onClick
+import io.kvision.form.text.textAreaInput
+import io.kvision.html.*
+import io.kvision.module
+import io.kvision.panel.root
+import io.kvision.startApplication
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLTextAreaElement
+import kotlin.js.Date
+import kotlin.js.Json
+
+val AppScope = CoroutineScope(window.asCoroutineDispatcher());
+
+class App: Application() {
+    init {
+        io.kvision.require("bootstrap.min.css")
+        io.kvision.require("overall.css")
+    }
+    override fun start() {
+        val date = Date()
+        root("hello"){
+            h2("HIKKI-TOP").onClick { window.location.href="/" }
+        }
+        root("reverser"){
+            p(){setAttribute("id", "textAreaInfo")}
+            div(className = "form-group") {
+                val textInputInfo = document.getElementById("textAreaInfo")
+                textInputInfo?.innerHTML = "<p>Input Text <font size=2>(Based on <a href='https://cloud.baidu.com/product/speech/tts_online'>Baidu TTS</a>)</font></p>"
+                textAreaInput(rows=3, className = "form-control") {
+                    setAttribute("id", "textArea1")
+                    setAttribute("maxlength", "50")
+                    setAttribute("placeholder", "哎呀米诺")
+                }
+            }
+            div(className = "btn-set") {
+                button("Convert", className = "btn btn-secondary long-btn") {
+                    onClick {
+                        val textAreaE = document.getElementById("textArea1") as HTMLTextAreaElement
+                        AppScope.launch {
+                            // ReverserModel.ping("fe")
+                            val barElement = document.getElementById("process-bar") as HTMLElement
+                            barElement.hidden = false
+                            barElement.innerHTML = "<p class='text-warning' style='float:left;'><b>processing...</b></p><img src='static/Pulse.gif' width='50px'>"
+
+                            ReverserModel.getAudioByText(textAreaE.value)
+                            val audioBase64 = ReverserModel.audioBase64
+                            val audioContainer = document.getElementById("audio-container") as HTMLElement
+                            audioContainer.innerHTML = "<audio id='audio-player' controls><source type='audio/wav' src='$audioBase64'></audio>"
+                            barElement.innerHTML = "<img src='static/done.png' width='40px' style='float:left'><p class='text-success'><b>Done</b></p>"
+                        }
+                    }
+                }
+            }
+        }
+        root("recoder-btn"){
+            div(className = "btn-set") {
+                button("Convert", className = "btn btn-secondary long-btn") {
+                    onClick {
+                        AppScope.launch {
+                            // ReverserModel.ping("fe")
+                            val barElement = document.getElementById("process-bar") as HTMLElement
+                            barElement.hidden = false
+                            barElement.innerHTML = "<p class='text-warning' style='float:left;'><b>processing...</b></p><img src='static/Pulse.gif' width='50px'>"
+
+                            val base64 = document.getElementById("recordingsList") as HTMLElement
+                            val base64Str = base64.innerText.split(",")[1]
+                            ReverserModel.getAudioByFile(base64Str)
+                            val audioBase64 = ReverserModel.audioBase64
+                            val audioContainer = document.getElementById("audio-container") as HTMLElement
+                            audioContainer.innerHTML = "<audio id='audio-player' controls><source type='audio/wav' src='$audioBase64'></audio>"
+                            barElement.innerHTML = "<img src='static/done.png' width='40px' style='float:left'><p class='text-success'><b>Done</b></p>"
+                        }
+                    }
+                }
+            }
+        }
+        root("ip-info"){
+            h5("IP service provided by <a href='https://ipgeolocation.io/'>ipgeolocation.io</a>", rich=true)
+            p("<font color='#D3D3D3'>This site won't save your IP information</font>", rich=true)
+            AppScope.launch {
+                IPGeoModel.getIPInfo()
+                val ipInfo = JSON.parse<Json>(IPGeoModel.ipInfo)
+                val district = ipInfo["district"]as String?
+                val city = ipInfo["city"]as String?
+                val countryCode = ipInfo["countryCode"]as String?
+                val statusCode = ipInfo["code"]as String?
+                val offset = ipInfo["timeOffset"]as Int?
+
+                div(className = "card border-primary mb-3"){
+                    div("IP Address", className="card-header")
+                    div(className="card-body"){
+                        h4(ipInfo["ipaddr"]as String?, className="card-title")
+                        p(ipInfo["hostname"]as String?, className="card-text")
+                    }
+                }
+                div(className = "card border-primary mb-3"){
+                    div("Location", className="card-header")
+                    div(className="card-body"){
+                        h4(ipInfo["countryName"]as String?, className="card-title")
+                        image(ipInfo["countryFlag"]as String?){setAttribute("style", "float:left;width:25px")}
+                        p("  $district, $city, $countryCode", className="card-text")
+                    }
+                }
+                div(className = "card border-primary mb-3"){
+                    div("ISP", className="card-header")
+                    div(className="card-body"){
+                        h4(ipInfo["isp"]as String?, className="card-title")
+                        p(ipInfo["organization"]as String?, className="card-text")
+                    }
+                }
+                div(className = "last-card card border-primary mb-3"){
+                    setAttribute("style", "float: none")
+                    div("Local Time", className="card-header")
+                    div(className="card-body") {
+                        h4("Based on your IP location", className = "card-title")
+                        p(className = "card-text") { setAttribute("id", "clock") }
+                    }
+                    window.setInterval(handler={
+                        val clock = document.getElementById("clock") as HTMLElement
+                        val localOffset = Date().getTimezoneOffset()
+                        val utc=Date().getTime()+localOffset.times(60*1000)
+                        val targetDate = Date(utc.plus(offset?.times(3600*1000)?:0))
+                        val offsetStr = if(offset!!>=0) "UTC+$offset" else "UTC$offset"
+                        clock.innerText = dateFormat(targetDate) + " $offsetStr"
+                    }, 10)
+                }
+                if(statusCode!="200"){
+                    add(div("Backend exception (status code $statusCode), you can try again or drop me a line by "+
+                        "<a href='https://marshmallow-qa.com/fovnull?utm_medium=url_text&utm_source=promotion'>marshmallow</a> or email."
+                        , rich=true))
+                }
+            }
+        }
+        root("footer"){
+            div(className = "row"){
+                div(className = "col-lg-12"){
+                    ul(className = "list-unstyled"){
+                        li(className = "float-end"){link("Back to top", "#top")}
+                        li{link("Twitter", "https://twitter.com/FoVNull")}
+                        li{link("GitHub", "https://github.com/FoVNull")}
+                        li("Anonymous bugs report: <a href='https://marshmallow-qa.com/fovnull?utm_medium=url_text&utm_source=promotion'>marshmallow</a>", rich=true)
+                    }
+                    p("©"+date.getFullYear()+" Made by <a href='/'>FoVNull</a>.", rich=true)
+                    p("Powered by <a href='https://kvision.io/'>KVision</a>.", rich=true)
+                    p("Theme based on <a href=\"https://bootswatch.com/quartz/\" rel=\"nofollow\">Bootswatch</a>.", rich=true)
+                    br()
+                    p("<img style='float:left;' src='http://hikki.top/wp-content/themes/gonganbeian.png'>" +
+                            "<a href='http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32010602010404' target='_blank'>" +
+                            "苏公网安备32010602010404</a>&nbsp;&nbsp;&nbsp;&nbsp;"+
+                            "<a href='https://beian.miit.gov.cn/' target='_blank'>苏ICP备18011034号-1</a>"
+                    , rich=true
+                    )
+                }
+            }
+        }
+    }
+    private fun dateFormat(date: Date): String{
+        val Y = date.getFullYear()
+        val M = if(date.getMonth()+1<10) "0"+(date.getMonth()+1) else (date.getMonth()+1)
+        val D = if(date.getDay()+1<10) "0"+(date.getDay()+1) else (date.getDay()+1)
+        val h = if(date.getHours()<10) "0"+date.getHours() else (date.getHours())
+        val m = if(date.getMinutes()<10) "0"+date.getMinutes() else (date.getMinutes())
+        val s = if(date.getSeconds()<10) "0"+date.getSeconds() else (date.getSeconds())
+
+        return "$Y/$M/$D $h:$m:$s"
+    }
+}
+
+fun main() {
+    startApplication(::App, module.hot, CoreModule)
+}
