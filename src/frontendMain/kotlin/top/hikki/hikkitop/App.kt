@@ -6,6 +6,7 @@ import io.kvision.core.onClick
 import io.kvision.form.text.textAreaInput
 import io.kvision.html.*
 import io.kvision.module
+import io.kvision.panel.SimplePanel
 import io.kvision.panel.root
 import io.kvision.startApplication
 import kotlinx.browser.document
@@ -14,9 +15,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLTextAreaElement
 import kotlin.js.Date
 import kotlin.js.Json
+import kotlin.js.RegExp
 
 val AppScope = CoroutineScope(window.asCoroutineDispatcher());
 
@@ -26,7 +29,6 @@ class App: Application() {
         io.kvision.require("overall.css")
     }
     override fun start() {
-        val date = Date()
         root("hello"){
             h2("HIKKI-TOP").onClick { window.location.href="/" }
         }
@@ -125,13 +127,15 @@ class App: Application() {
                         p(className = "card-text") { setAttribute("id", "clock") }
                     }
                     window.setInterval(handler={
-                        val clock = document.getElementById("clock") as HTMLElement
-                        val localOffset = Date().getTimezoneOffset()
-                        val utc=Date().getTime()+localOffset.times(60*1000)
-                        val targetDate = Date(utc.plus(offset?.times(3600*1000)?:0))
-                        val offsetStr = if(offset!!>=0) "UTC+$offset" else "UTC$offset"
-                        clock.innerText = dateFormat(targetDate) + " $offsetStr"
-                    }, 10)
+                        if(document.getElementById("clock")!=null) {
+                            val clock = document.getElementById("clock") as HTMLElement
+                            val localOffset = Date().getTimezoneOffset()
+                            val utc = Date().getTime() + localOffset.times(60 * 1000)
+                            val targetDate = Date(utc.plus(offset?.times(3600 * 1000) ?: 0))
+                            val offsetStr = if (offset!! >= 0) "UTC+$offset" else "UTC$offset"
+                            clock.innerText = dateFormat(targetDate) + " $offsetStr"
+                        }
+                    }, 100)
                 }
                 if(statusCode!="200"){
                     add(div("Backend exception (status code $statusCode), you can try again or drop me a line by "+
@@ -140,27 +144,11 @@ class App: Application() {
                 }
             }
         }
+        root("thumbnails-download"){
+            add(thumbnailsPanel)
+        }
         root("footer"){
-            div(className = "row"){
-                div(className = "col-lg-12"){
-                    ul(className = "list-unstyled"){
-                        li(className = "float-end"){link("Back to top", "#top")}
-                        li{link("Twitter", "https://twitter.com/FoVNull")}
-                        li{link("GitHub", "https://github.com/FoVNull")}
-                        li("Anonymous bugs report: <a href='https://marshmallow-qa.com/fovnull?utm_medium=url_text&utm_source=promotion'>marshmallow</a>", rich=true)
-                    }
-                    p("©"+date.getFullYear()+" Made by <a href='/'>FoVNull</a>.", rich=true)
-                    p("Powered by <a href='https://kvision.io/'>KVision</a>.", rich=true)
-                    p("Theme based on <a href=\"https://bootswatch.com/quartz/\" rel=\"nofollow\">Bootswatch</a>.", rich=true)
-                    br()
-                    p("<img style='float:left;' src='http://hikki.top/wp-content/themes/gonganbeian.png'>" +
-                            "<a href='http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32010602010404' target='_blank'>" +
-                            "苏公网安备32010602010404</a>&nbsp;&nbsp;&nbsp;&nbsp;"+
-                            "<a href='https://beian.miit.gov.cn/' target='_blank'>苏ICP备18011034号-1</a>"
-                    , rich=true
-                    )
-                }
-            }
+            add(footerPanel)
         }
     }
     private fun dateFormat(date: Date): String{
@@ -172,6 +160,118 @@ class App: Application() {
         val s = if(date.getSeconds()<10) "0"+date.getSeconds() else (date.getSeconds())
 
         return "$Y/$M/$D $h:$m:$s"
+    }
+}
+
+//  write html component separately; make start() clean
+val thumbnailsPanel = SimplePanel{
+    h5("Support bilibili and youtube.", rich=true)
+    p("<font color='#D3D3D3'>You can click save button to download</font>", rich=true)
+    div(className = "input-group mb-3") {
+        input(className = "form-control") {
+            setAttribute("id", "url-text")
+            setAttribute("type", "text")
+            setAttribute("placeholder", "paste url of video")
+            setAttribute("aria-describedby", "btn-submit-url")
+        }
+        button("download", className = "btn btn-primary"){
+            setAttribute("id", "btn-submit-url")
+            onClick {
+                val urlText = document.getElementById("url-text") as HTMLInputElement
+
+                val thumbnailPanel = document.getElementById("thumbnail-panel") as HTMLElement
+                var site: VideoSite = VideoSite.UNKNOWN
+                val siteInfoElement = document.getElementById("site-info") as HTMLElement
+                val imgURLElement = document.getElementById("thumbnail-url") as HTMLElement
+                val downloadBtn = document.getElementById("btn-download") as HTMLElement
+
+                thumbnailPanel.hidden = true
+                AppScope.launch {
+                    val url = urlText.value
+                    if (url.contains("youtube")){
+                        site = VideoSite.YOUTUBE
+                    }else if(url.contains("bilibili")){
+                        site = VideoSite.BILIBILI
+                    }
+
+                    val queryString: String = url.split("?")[1]
+                    when(site){
+                        VideoSite.YOUTUBE -> {
+                            val params = queryString.split("&")
+                            for(param in params){
+                                val kv = param.split("=")
+                                check(kv.size == 2 ){"Query string parse wrong."}
+                                if(kv[0] == "v") {
+                                    val imgURL = "https://i.ytimg.com/vi/${kv[1]}/maxresdefault.jpg"
+                                    XhrModel.getYtThumbResponse(imgURL, "https://www.youtube.com/watch?v=${kv[1]}")
+                                    val response = JSON.parse<Json>(XhrModel.responseJsonStr)
+                                    siteInfoElement.innerHTML = "<h5 class='modal-title'>${response["title"]}</h5>"
+                                    imgURLElement.innerHTML = "<img src='${response["picBase64"]}' width='100%'>"
+                                    downloadBtn.innerHTML = "<a download='${kv[1]}.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"
+                                    break
+                                }
+                            }
+                        }
+                        VideoSite.BILIBILI -> {
+                            val pattern = RegExp("[a-zA-z]+://")
+                            val bv = if(pattern.test(url))
+                                url.split("://")[1].split("/")[2]
+                            else
+                                url.split("/")[2]
+
+                            XhrModel.getBiVideoResponse("http://api.bilibili.com/x/web-interface/view?bvid=$bv")
+                            val response = JSON.parse<Json>(XhrModel.responseJsonStr)
+                            siteInfoElement.innerHTML = "<h5 class='modal-title'>${response["title"]} - Bilibili</h5>"
+                            imgURLElement.innerHTML = "<img download='$bv.jpg' src='${response["picBase64"]}' width='100%'>"
+                            downloadBtn.innerHTML = "<a download='$bv.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"
+                        }
+                        VideoSite.UNKNOWN -> {
+                            siteInfoElement.innerHTML = "<h5 class='modal-title'>Unknown site</h5>"
+                            imgURLElement.innerHTML = "<img src='' width='100%'>"
+                        }
+                    }
+
+                    thumbnailPanel.hidden = false
+                }
+            }
+        }
+    }
+    div(){
+        setAttribute("hidden", "true")
+        setAttribute("id", "thumbnail-panel")
+        div (className="modal-dialog"){
+            setAttribute("role", "document")
+            div(className = "modal-content"){
+                div(className = "modal-header"){
+                    setAttribute("id", "site-info")
+                }
+                div(className = "modal-body"){setAttribute("id", "thumbnail-url")}
+                div(className = "modal-footer"){setAttribute("id", "btn-download")}
+            }
+        }
+    }
+}
+
+val footerPanel = SimplePanel{
+    div(className = "row"){
+        div(className = "col-lg-12"){
+            ul(className = "list-unstyled"){
+                li(className = "float-end"){link("Back to top", "#top")}
+                li{link("Twitter", "https://twitter.com/FoVNull")}
+                li{link("GitHub", "https://github.com/FoVNull")}
+                li("Anonymous bugs report: <a href='https://marshmallow-qa.com/fovnull?utm_medium=url_text&utm_source=promotion'>marshmallow</a>", rich=true)
+            }
+            p("©"+Date().getFullYear()+" Made by <a href='/'>FoVNull</a>.", rich=true)
+            p("Powered by <a href='https://kvision.io/'>KVision</a>.", rich=true)
+            p("Theme based on <a href=\"https://bootswatch.com/quartz/\" rel=\"nofollow\">Bootswatch</a>.", rich=true)
+            br()
+            p("<img style='float:left;' src='http://hikki.top/wp-content/themes/gonganbeian.png'>" +
+                    "<a href='http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32010602010404' target='_blank'>" +
+                    "苏公网安备32010602010404</a>&nbsp;&nbsp;&nbsp;&nbsp;"+
+                    "<a href='https://beian.miit.gov.cn/' target='_blank'>苏ICP备18011034号-1</a>"
+                , rich=true
+            )
+        }
     }
 }
 

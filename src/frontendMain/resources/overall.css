@@ -53,6 +53,14 @@ html {
     margin-left: 2rem;
 }
 
+#thumbnail-panel{
+    width: 100%;
+}
+.modal-dialog{
+    max-width: 90%;
+    padding-left: 1rem;
+}
+
 #footer{margin:2rem; padding-bottom:1rem; position: relative; top:10rem; width: 80%}
 #footer li{float:left;margin-right:1.5em;margin-bottom:1.5em}
 #footer p{margin-bottom:0;clear:left}
