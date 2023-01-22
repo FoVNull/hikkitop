@@ -41,7 +41,7 @@ public class TtsMain {
 
     public TtsMain() {
         try {
-            InputStream inputStream = new FileInputStream("C:/tmp/key.yml");
+            InputStream inputStream = new FileInputStream("/home/key.yml");
             Yaml yaml = new Yaml();
             Map<String, Map<String, String>> data = yaml.load(inputStream);
             appKey = data.get("baiduTTS").get("appKey");
@@ -115,7 +115,7 @@ public class TtsMain {
     private String reverseAudio(String prefix, String filename, String suffix)
             throws InterruptedException, IOException {
         //use pydup, only support wav
-        String cmd = "python C:/tmp/AudioReverser.py --prefix " + prefix +
+        String cmd = "python /home/AudioReverser.py --prefix " + prefix +
                 " --input_file "+filename+"."+suffix+" --output_file "+filename+"."+suffix;
         Process p = Runtime.getRuntime().exec(cmd);
         p.waitFor();

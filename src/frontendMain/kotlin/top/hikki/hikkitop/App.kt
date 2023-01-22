@@ -265,7 +265,7 @@ val footerPanel = SimplePanel{
             p("Powered by <a href='https://kvision.io/'>KVision</a>.", rich=true)
             p("Theme based on <a href=\"https://bootswatch.com/quartz/\" rel=\"nofollow\">Bootswatch</a>.", rich=true)
             br()
-            p("<img style='float:left;' src='http://hikki.top/wp-content/themes/gonganbeian.png'>" +
+            p("<img style='float:left;' src='http://hikki.top/hikkiblog/wp-content/themes/gonganbeian.png'>" +
                     "<a href='http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32010602010404' target='_blank'>" +
                     "苏公网安备32010602010404</a>&nbsp;&nbsp;&nbsp;&nbsp;"+
                     "<a href='https://beian.miit.gov.cn/' target='_blank'>苏ICP备18011034号-1</a>"
@@ -275,6 +275,6 @@ val footerPanel = SimplePanel{
     }
 }
 
-fun main() {
+fun main(args: Array<String>) {
     startApplication(::App, module.hot, CoreModule)
 }

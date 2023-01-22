@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 actual class ReverserService : IReverserService {
     val reverser = TtsMain()
 
-    val prefix = "C:/tmp/"
+    val prefix = "/tmp/"
     val suffix = "wav"
 
     override suspend fun ping(message: String): List<String> {

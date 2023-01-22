@@ -14,7 +14,7 @@ public class IPGeoMain {
 
     public IPGeoMain() {
         try {
-            InputStream inputStream = new FileInputStream("C:/tmp/key.yml");
+            InputStream inputStream = new FileInputStream("/home/key.yml");
             Yaml yaml = new Yaml();
             Map<String, Map<String, String>> data = yaml.load(inputStream);
             api = new IPGeolocationAPI(data.get("ipgeo").get("apiKey"));
@@ -23,9 +23,10 @@ public class IPGeoMain {
         }
     }
 
-    public String getIPInfo(){
+    public String getIPInfo(String ipAddr){
+        System.out.println(ipAddr);
         GeolocationParams geoParams = new GeolocationParams();
-        // geoParams.setIPAddress("101.132.139.227");
+        geoParams.setIPAddress(ipAddr);
         geoParams.setLang("en");
 
 //        var fields = new String[]{"geo",

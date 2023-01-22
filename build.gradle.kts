@@ -15,12 +15,11 @@ plugins {
     id("io.kvision") version kvisionVersion
 }
 
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0"
 group = "top.hikki"
 
 repositories {
     mavenCentral()
-    jcenter()
     mavenLocal()
 }
 
@@ -40,7 +39,7 @@ kotlin {
         withJava()
         compilations.all {
             kotlinOptions {
-                jvmTarget = "16"
+                jvmTarget = "1.8"
                 freeCompilerArgs = listOf("-Xjsr305=strict")
             }
         }
@@ -51,13 +50,13 @@ kotlin {
                 outputFileName = "main.bundle.js"
                 sourceMaps = false
                 devServer = KotlinWebpackConfig.DevServer(
-                    open = true,
-                    port = 3000,
+                    open = false,
+                    port = 80,
                     proxy = mutableMapOf(
                         "/kv/*" to "http://localhost:8080",
                         "/kvws/*" to mapOf("target" to "ws://localhost:8080", "ws" to true)
                     ),
-                    static = mutableListOf("$buildDir\\processedResources\\frontend\\main")
+                    static = mutableListOf("$buildDir/processedResources/frontend/main")
                 )
             }
             webpackTask {
@@ -113,7 +112,7 @@ kotlin {
                 implementation("io.kvision:kvision-bootstrap-css:$kvisionVersion")
                 api("io.kvision:jquery-kotlin:1.0.0")
             }
-            kotlin.srcDir("build/generated-src/frontend")
+            // kotlin.srcDir("build/generated-src/frontend")
         }
         val frontendTest by getting {
             dependencies {
@@ -131,7 +130,7 @@ afterEvaluate {
             group = "package"
             archiveAppendix.set("frontend")
             val distribution =
-                project.tasks.getByName("frontendBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory!!
+                project.tasks.getByName("frontendBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory
             from(distribution) {
                 include("*.*")
             }
@@ -146,7 +145,7 @@ afterEvaluate {
                         "Implementation-Title" to rootProject.name,
                         "Implementation-Group" to rootProject.group,
                         "Implementation-Version" to rootProject.version,
-                        "Timestamp" to System.currentTimeMillis()
+                        "Timestamp" to System.currentTimeMillis(),
                     )
                 )
             }
