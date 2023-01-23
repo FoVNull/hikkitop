@@ -89,58 +89,60 @@ class App: Application() {
             h5("IP service provided by <a href='https://ipgeolocation.io/'>ipgeolocation.io</a>", rich=true)
             p("<font color='#D3D3D3'>This site won't save your IP information</font>", rich=true)
             AppScope.launch {
-                IPGeoModel.getIPInfo(window.location.search)
-                val ipInfo = JSON.parse<Json>(IPGeoModel.ipInfo)
-                val district = ipInfo["district"]as String?
-                val city = ipInfo["city"]as String?
-                val countryCode = ipInfo["countryCode"]as String?
-                val statusCode = ipInfo["code"]as String?
-                val offset = ipInfo["timeOffset"]as Int?
+                if(window.location.search!="") {
+                    IPGeoModel.getIPInfo(window.location.search)
+                    val ipInfo = JSON.parse<Json>(IPGeoModel.ipInfo)
+                    val district = ipInfo["district"] as String?
+                    val city = ipInfo["city"] as String?
+                    val countryCode = ipInfo["countryCode"] as String?
+                    val statusCode = ipInfo["code"] as String?
+                    val offset = ipInfo["timeOffset"] as Int?
 
-                div(className = "card border-primary mb-3"){
-                    div("IP Address", className="card-header")
-                    div(className="card-body"){
-                        h4(ipInfo["ipaddr"]as String?, className="card-title")
-                        p(ipInfo["hostname"]as String?, className="card-text")
-                    }
-                }
-                div(className = "card border-primary mb-3"){
-                    div("Location", className="card-header")
-                    div(className="card-body"){
-                        h4(ipInfo["countryName"]as String?, className="card-title")
-                        image(ipInfo["countryFlag"]as String?){setAttribute("style", "float:left;width:25px")}
-                        p("  $district, $city, $countryCode", className="card-text")
-                    }
-                }
-                div(className = "card border-primary mb-3"){
-                    div("ISP", className="card-header")
-                    div(className="card-body"){
-                        h4(ipInfo["isp"]as String?, className="card-title")
-                        p(ipInfo["organization"]as String?, className="card-text")
-                    }
-                }
-                div(className = "last-card card border-primary mb-3"){
-                    setAttribute("style", "float: none")
-                    div("Local Time", className="card-header")
-                    div(className="card-body") {
-                        h4("Based on your IP location", className = "card-title")
-                        p(className = "card-text") { setAttribute("id", "clock") }
-                    }
-                    window.setInterval(handler={
-                        if(document.getElementById("clock")!=null) {
-                            val clock = document.getElementById("clock") as HTMLElement
-                            val localOffset = Date().getTimezoneOffset()
-                            val utc = Date().getTime() + localOffset.times(60 * 1000)
-                            val targetDate = Date(utc.plus(offset?.times(3600 * 1000) ?: 0))
-                            val offsetStr = if (offset!! >= 0) "UTC+$offset" else "UTC$offset"
-                            clock.innerText = dateFormat(targetDate) + " $offsetStr"
+                    div(className = "card border-primary mb-3") {
+                        div("IP Address", className = "card-header")
+                        div(className = "card-body") {
+                            h4(ipInfo["ipaddr"] as String?, className = "card-title")
+                            p(ipInfo["hostname"] as String?, className = "card-text")
                         }
-                    }, 100)
-                }
-                if(statusCode!="200"){
-                    add(div("Backend exception (status code $statusCode), you can try again or drop me a line by "+
-                        "<a href='https://marshmallow-qa.com/fovnull?utm_medium=url_text&utm_source=promotion'>marshmallow</a> or email."
-                        , rich=true))
+                    }
+                    div(className = "card border-primary mb-3") {
+                        div("Location", className = "card-header")
+                        div(className = "card-body") {
+                            h4(ipInfo["countryName"] as String?, className = "card-title")
+                            image(ipInfo["countryFlag"] as String?) { setAttribute("style", "float:left;width:25px") }
+                            p("  $district, $city, $countryCode", className = "card-text")
+                        }
+                    }
+                    div(className = "card border-primary mb-3") {
+                        div("ISP", className = "card-header")
+                        div(className = "card-body") {
+                            h4(ipInfo["isp"] as String?, className = "card-title")
+                            p(ipInfo["organization"] as String?, className = "card-text")
+                        }
+                    }
+                    div(className = "last-card card border-primary mb-3") {
+                        setAttribute("style", "float: none")
+                        div("Local Time", className = "card-header")
+                        div(className = "card-body") {
+                            h4("Based on your IP location", className = "card-title")
+                            p(className = "card-text") { setAttribute("id", "clock") }
+                        }
+                        window.setInterval(handler = {
+                            if (document.getElementById("clock") != null) {
+                                val clock = document.getElementById("clock") as HTMLElement
+                                val localOffset = Date().getTimezoneOffset()
+                                val utc = Date().getTime() + localOffset.times(60 * 1000)
+                                val targetDate = Date(utc.plus(offset?.times(3600 * 1000) ?: 0))
+                                val offsetStr = if (offset!! >= 0) "UTC+$offset" else "UTC$offset"
+                                clock.innerText = dateFormat(targetDate) + " $offsetStr"
+                            }
+                        }, 100)
+                    }
+                    if(statusCode!="200"){
+                        add(div("Backend exception (status code $statusCode), you can try again or drop me a line by "+
+                                "<a href='https://marshmallow-qa.com/fovnull?utm_medium=url_text&utm_source=promotion'>marshmallow</a> or email."
+                            , rich=true))
+                    }
                 }
             }
         }
