@@ -8,7 +8,7 @@ object IPGeoModel {
 
     var ipInfo = ""
 
-    suspend fun getIPInfo(){
-        ipInfo = ipGeoService.getIPInfo()
+    suspend fun getIPInfo(ipAddr: String){
+        ipInfo = ipGeoService.getIPInfo(ipAddr)
     }
 }

@@ -89,7 +89,7 @@ class App: Application() {
             h5("IP service provided by <a href='https://ipgeolocation.io/'>ipgeolocation.io</a>", rich=true)
             p("<font color='#D3D3D3'>This site won't save your IP information</font>", rich=true)
             AppScope.launch {
-                IPGeoModel.getIPInfo()
+                IPGeoModel.getIPInfo(window.location.search)
                 val ipInfo = JSON.parse<Json>(IPGeoModel.ipInfo)
                 val district = ipInfo["district"]as String?
                 val city = ipInfo["city"]as String?
@@ -154,7 +154,7 @@ class App: Application() {
     private fun dateFormat(date: Date): String{
         val Y = date.getFullYear()
         val M = if(date.getMonth()+1<10) "0"+(date.getMonth()+1) else (date.getMonth()+1)
-        val D = if(date.getDay()+1<10) "0"+(date.getDay()+1) else (date.getDay()+1)
+        val D = if(date.getDate()+1<10) "0"+date.getDate() else date.getDate()
         val h = if(date.getHours()<10) "0"+date.getHours() else (date.getHours())
         val m = if(date.getMinutes()<10) "0"+date.getMinutes() else (date.getMinutes())
         val s = if(date.getSeconds()<10) "0"+date.getSeconds() else (date.getSeconds())
@@ -265,7 +265,7 @@ val footerPanel = SimplePanel{
             p("Powered by <a href='https://kvision.io/'>KVision</a>.", rich=true)
             p("Theme based on <a href=\"https://bootswatch.com/quartz/\" rel=\"nofollow\">Bootswatch</a>.", rich=true)
             br()
-            p("<img style='float:left;' src='http://hikki.top/hikkiblog/wp-content/themes/gonganbeian.png'>" +
+            p("<img style='float:left;' src='http://server.hikki.top/hikkiblog/wp-content/themes/gonganbeian.png'>" +
                     "<a href='http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32010602010404' target='_blank'>" +
                     "苏公网安备32010602010404</a>&nbsp;&nbsp;&nbsp;&nbsp;"+
                     "<a href='https://beian.miit.gov.cn/' target='_blank'>苏ICP备18011034号-1</a>"
@@ -275,6 +275,6 @@ val footerPanel = SimplePanel{
     }
 }
 
-fun main(args: Array<String>) {
+fun main() {
     startApplication(::App, module.hot, CoreModule)
 }

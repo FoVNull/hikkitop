@@ -24,7 +24,6 @@ public class IPGeoMain {
     }
 
     public String getIPInfo(String ipAddr){
-        System.out.println(ipAddr);
         GeolocationParams geoParams = new GeolocationParams();
         geoParams.setIPAddress(ipAddr);
         geoParams.setLang("en");
