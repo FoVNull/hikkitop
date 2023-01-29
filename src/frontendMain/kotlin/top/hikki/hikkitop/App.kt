@@ -168,7 +168,7 @@ class App: Application() {
 //  write html component separately; make start() clean
 val thumbnailsPanel = SimplePanel{
     h5("Support bilibili and youtube.", rich=true)
-    p("<font color='#D3D3D3'>You can click save button to download</font>", rich=true)
+    p("<font color='#D3D3D3'>You can click save button to download. <br> Support youtube video download link (y2mate)</font>", rich=true)
     div(className = "input-group mb-3") {
         input(className = "form-control") {
             setAttribute("id", "url-text")
@@ -209,7 +209,8 @@ val thumbnailsPanel = SimplePanel{
                                     val response = JSON.parse<Json>(XhrModel.responseJsonStr)
                                     siteInfoElement.innerHTML = "<h5 class='modal-title'>${response["title"]}</h5>"
                                     imgURLElement.innerHTML = "<img src='${response["picBase64"]}' width='100%'>"
-                                    downloadBtn.innerHTML = "<a download='${kv[1]}.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"
+                                    downloadBtn.innerHTML = "<a download='${kv[1]}.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"+
+                                            "<a href='https://youtubepi.com/watch?v=${kv[1]}' target='_blank'><button class='btn btn-primary'>y2mate</button></a>"
                                     break
                                 }
                             }
@@ -267,7 +268,7 @@ val footerPanel = SimplePanel{
             p("Powered by <a href='https://kvision.io/'>KVision</a>.", rich=true)
             p("Theme based on <a href=\"https://bootswatch.com/quartz/\" rel=\"nofollow\">Bootswatch</a>.", rich=true)
             br()
-            p("<img style='float:left;' src='http://server.hikki.top/hikkiblog/wp-content/themes/gonganbeian.png'>" +
+            p("<img style='float:left;' src='static/gonganbeian.png'>" +
                     "<a href='http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32010602010404' target='_blank'>" +
                     "苏公网安备32010602010404</a>&nbsp;&nbsp;&nbsp;&nbsp;"+
                     "<a href='https://beian.miit.gov.cn/' target='_blank'>苏ICP备18011034号-1</a>"

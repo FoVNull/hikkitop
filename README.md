@@ -6,22 +6,30 @@ Powered by [![](https://img.shields.io/badge/KVision-9370DB.svg?logo=data:image/
 Just for fun. Domain: [hikki.top](http://hikki.top)
 
 ## Update logs
+- **2023-01-29 v1.0.2**
+> **LOGS**
+>- Add y2mate (youtube video download) link after thumbnail download.
+>- Update footer.
+>
+> **TO-DO**
+>>- Webpack deploy. *(low priority)* 
+
 - **2023-01-23 v1.0.1**
-> **WHAT'S NEW**
+> **LOGS**
 >- Fix the IP Geo features. Now you can check your ip info.
 >
-> **MEMO**
+> **TO-DO**
 >>- The deployment of KVision is kinda fragile. Hope I can fix that in few weeks.
 >>- Consider pipeline of deploy. *(low priority)* 🤔
 
 - **2023-01-22 v1.0.0**
-> **WHAT'S NEW**
+> **LOGS**
 >- Deployed on http://hikki.top  
 >- Features
 >>- Audio Reverser
 >>- Video Thumbnail download(youtube, bilibili)  
 >>- WordPress blog has been migrated to http://blog.hikki.top  
 >>
-> **MEMO**
+> **TO-DO**
 >>- Fix IP Geo features
 >>- The deployment of KVision is kinda weird, I'm gonna to fix that.*(low priority)*
