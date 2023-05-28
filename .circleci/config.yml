@@ -4,7 +4,7 @@ jobs:
   build:
     resource_class: medium
     docker:
-      - image: cimg/openjdk:11.0
+      - image: cimg/openjdk:19.0
     steps:
       - checkout
       - run:
