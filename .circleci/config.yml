@@ -8,20 +8,32 @@ jobs:
     steps:
       - checkout
       - run:
-        command: |
-          ./gradlew clean build -x test --stacktrace
+          command: |
+            chmod 005 ./gradlew
+            ./gradlew clean build -x test --stacktrace
+            VERSION=$(./gradlew printVersion)
+            scp ./build/libs/hikkitop-${VERSION}.jar $ALI_SWAS_USER@$ALI_SWAS_HOST :/app/ 
 
   deploy:
+    docker:
+      - image: cimg/base
     steps:
       - run:
           name: Deploy over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST "/app/hikkitop/scripts/deployer.sh"
+            ssh $ALI_SWAS_USER@$ALI_SWAS_HOST 
+            "cd /app/hikkitop \n
+            git pull \n
+            sleep 5s \n
+            sh /app/hikkitop/scripts/deployer.sh"
 
 workflows:
   build-and-deploy:
     jobs:
-      - build
+      - build:
+        filters:
+          branches:
+            only: dev
       - deploy:
           requires:
             - build

@@ -18,6 +18,10 @@ plugins {
 version = "1.1.1"
 group = "top.hikki"
 
+task("printVersion") {
+    println(project.version)
+}
+
 repositories {
     mavenCentral()
     mavenLocal()
