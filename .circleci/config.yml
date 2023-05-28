@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  build:
+    resource_class: medium
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - checkout
+      - run:
+        command: |
+          ./gradlew clean build -x test --stacktrace
+
+  deploy:
+    steps:
+      - run:
+          name: Deploy over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST "/app/hikkitop/scripts/deployer.sh"
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main

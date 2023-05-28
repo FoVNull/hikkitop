@@ -1,11 +1,12 @@
-.*/
 build/
 out/
+*.idea
+.gradle
+.kotlin-js-store
 /refresh.sh
 *.imp
 *.ipr
 *.iws
-*.idea
 *.png
 *.jpg
 *.gif
