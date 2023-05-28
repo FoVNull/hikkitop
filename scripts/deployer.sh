@@ -1,3 +1,5 @@
+chmod 777 /app/hikkitop/gradlew
+
 echo "Deploy frontend"
 nohup ./gradlew frontendRun -t > /app/toplogs/frontend.log
 
