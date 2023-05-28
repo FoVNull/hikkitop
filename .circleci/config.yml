@@ -8,8 +8,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: build and push
           command: |
-            chmod 005 ./gradlew
+            chmod 555 ./gradlew
             ./gradlew clean build -x test --stacktrace
             VERSION=$(./gradlew printVersion)
             scp ./build/libs/hikkitop-${VERSION}.jar $ALI_SWAS_USER@$ALI_SWAS_HOST :/app/ 
