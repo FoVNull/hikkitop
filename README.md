@@ -6,6 +6,13 @@ Powered by [![](https://img.shields.io/badge/KVision-9370DB.svg?logo=data:image/
 Just for fun. Domain: [hikki.top](http://hikki.top)
 
 ## Update logs
+- **2023-06-18 v1.1.1**
+> **LOGS**
+>- Release CI v1.0
+>
+> **TO-DO**
+>>- Upgrade CI
+
 - **2023-05-05 v1.1**
 > **LOGS**
 >- Add regular expression playground
