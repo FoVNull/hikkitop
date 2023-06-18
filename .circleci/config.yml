@@ -1,30 +1,60 @@
 version: 2.1
 
 jobs:
-  build:
+  build-and-push:
     resource_class: medium
     docker:
-      - image: cimg/openjdk:11.0
+      - image: cimg/openjdk:19.0
     steps:
       - checkout
       - run:
-        command: |
-          ./gradlew clean build -x test --stacktrace
+          name: gradlew jar
+          command: |
+            chmod 555 ./gradlew
+            ./gradlew clean jar --stacktrace
+      - run:
+          name: Install tool pkgs
+          command: |
+            sudo apt update
+            sudo apt install rsync
+            sudo apt install sshpass
+      - run:
+          name: Push jar to alicloud
+          command: |
+            chmod 555 ./gradlew
+            VERSION=$(./gradlew printVersion |  cut -d " " -f 6 | sed 's/ //g')
+            echo "release version:"${VERSION}
+            TARGET="/app/"
+            SOURCE=$(echo "./build/libs/hikkitop-"${VERSION}".jar" | sed 's/ //g')
+            ssh-keyscan -H $ALI_SWAS_HOST >> ~/.ssh/known_hosts
+            sshpass -p $ALI_SWAS_PASS rsync --progress -avz ${SOURCE} -e ssh $ALI_SWAS_USER@$ALI_SWAS_HOST:${TARGET}
 
   deploy:
+    docker:
+      - image: cimg/base:2023.06
     steps:
+      - run:
+          name: Install tool pkgs
+          command: |
+            sudo apt update
+            sudo apt install sshpass
       - run:
           name: Deploy over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST "/app/hikkitop/scripts/deployer.sh"
+            sshpass -p $ALI_SWAS_PASS ssh $ALI_SWAS_USER@$ALI_SWAS_HOST "sh /app/hikkitop/scripts/deployer.sh"
 
 workflows:
   build-and-deploy:
     jobs:
-      - build
+      - build-and-push:
+        filters:
+          branches:
+            only:
+              - main
       - deploy:
           requires:
-            - build
+            - build-and-push
           filters:
             branches:
-              only: main
+              only:
+                - skip
