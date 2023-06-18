@@ -49,10 +49,4 @@ workflows:
       - build-and-push:
         filters:
           branches:
-            only: dev
-      - deploy:
-          requires:
-            - build-and-push
-          filters:
-            branches:
-              only: dev
+            only: main
