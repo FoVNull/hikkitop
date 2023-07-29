@@ -97,6 +97,7 @@ class App: Application() {
                     val countryCode = ipInfo["countryCode"] as String?
                     val statusCode = ipInfo["code"] as String?
                     val offset = ipInfo["timeOffset"] as Int?
+                    val isp = ipInfo["isp"] as String?
 
                     div(className = "card border-primary mb-3") {
                         div("IP Address", className = "card-header")
@@ -116,7 +117,7 @@ class App: Application() {
                     div(className = "card border-primary mb-3") {
                         div("ISP", className = "card-header")
                         div(className = "card-body") {
-                            h4(ipInfo["isp"] as String?, className = "card-title")
+                            h4(isp!!.padEnd(20, ' '), className = "card-title")
                             p(ipInfo["organization"] as String?, className = "card-text")
                         }
                     }

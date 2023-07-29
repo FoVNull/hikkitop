@@ -6,6 +6,10 @@ Powered by [![](https://img.shields.io/badge/KVision-9370DB.svg?logo=data:image/
 Just for fun. Domain: [hikki.top](http://hikki.top)
 
 ## Update logs
+- **2023-07-29 v1.1.1 patch**
+> **LOGS**
+>- Change link from server.hikki.top because of some special reasons. (Consider change domain provider...)
+
 - **2023-06-18 v1.1.1**
 > **LOGS**
 >- Release CI v1.0
