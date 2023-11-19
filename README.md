@@ -6,6 +6,15 @@ Powered by [![](https://img.shields.io/badge/KVision-9370DB.svg?logo=data:image/
 Just for fun. Domain: [hikki.top](http://hikki.top)
 
 ## Update logs
+- **2023-11-19 v1.1.2**
+> **LOGS**
+>- Bump up kvision to [7.1.0](https://github.com/rjaros/kvision/releases/tag/7.1.0)
+>- Remove blog, abort Wordpress
+> 
+> **TO-DO**
+>- recorder.js need fix.
+>- prepare abort php dependency
+
 - **2023-07-29 v1.1.1 patch**
 > **LOGS**
 >- Change link from server.hikki.top because of some special reasons. (Consider change domain provider...)
