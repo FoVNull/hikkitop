@@ -6,10 +6,10 @@ git pull
 sleep 5s
 
 echo "Deploy frontend"
-nohup ./gradlew frontendRun -t > /app/toplogs/frontend.log
+nohup ./gradlew jsRun -t > /app/toplogs/frontend.log
 
 echo "pending..."
-sleep 60s
+sleep 90s
 
 echo "Deploy backend"
 cd /app

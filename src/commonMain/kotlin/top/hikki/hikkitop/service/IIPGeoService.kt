@@ -1,4 +1,4 @@
-package top.hikki.hikkitop
+package top.hikki.hikkitop.service
 
 import io.kvision.annotations.KVService
 

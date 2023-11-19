@@ -1,21 +1,17 @@
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
-
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     val kotlinVersion: String by System.getProperties()
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
-    id("io.spring.dependency-management") version System.getProperty("dependencyManagementPluginVersion")
-    id("org.springframework.boot") version System.getProperty("springBootVersion")
     kotlin("plugin.spring") version kotlinVersion
     val kvisionVersion: String by System.getProperties()
     id("io.kvision") version kvisionVersion
+    id("io.spring.dependency-management") version System.getProperty("dependencyManagementPluginVersion")
+    id("org.springframework.boot") version System.getProperty("springBootVersion")
 }
 
-version = "1.1.1"
+version = "1.1.2"
 group = "top.hikki"
 
 task("printVersion") {
@@ -35,41 +31,45 @@ val coroutinesVersion: String by project
 extra["kotlin.version"] = kotlinVersion
 extra["kotlin-coroutines.version"] = coroutinesVersion
 
-val webDir = file("src/frontendMain/web")
+val webDir = file("src/jsMain/web")
 val mainClassName = "top.hikki.hikkitop.MainKt"
 
 kotlin {
-    jvm("backend") {
+    jvm {
         withJava()
         compilations.all {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = JavaVersion.VERSION_20.toString()
                 freeCompilerArgs = listOf("-Xjsr305=strict")
             }
         }
     }
-    js("frontend") {
+    js(IR) {
         browser {
             runTask {
-                outputFileName = "main.bundle.js"
+                mainOutputFileName = "main.bundle.js"
                 sourceMaps = false
                 devServer = KotlinWebpackConfig.DevServer(
                     open = false,
                     port = 80,
                     proxy = mutableMapOf(
                         "/kv/*" to "http://localhost:8080",
+                        "/kvsse/*" to "http://localhost:8080",
                         "/kvws/*" to mapOf("target" to "ws://localhost:8080", "ws" to true)
                     ),
-                    static = mutableListOf("$buildDir/processedResources/frontend/main")
+                    static = mutableListOf("${layout.buildDirectory.asFile.get()}/processedResources/js/main")
                 )
             }
             webpackTask {
-                outputFileName = "main.bundle.js"
+                mainOutputFileName = "main.bundle.js"
             }
             testTask {
                 useKarma {
                     useChromeHeadless()
                 }
+            }
+            tasks.getByName("jsProcessResources", Copy::class) {
+                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             }
         }
         binaries.executable()
@@ -87,7 +87,7 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val backendMain by getting {
+        val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation(kotlin("reflect"))
@@ -101,83 +101,26 @@ kotlin {
                 implementation("org.yaml:snakeyaml:1.33")
             }
         }
-        val backendTest by getting {
+        val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation("org.springframework.boot:spring-boot-starter-test")
             }
         }
-        val frontendMain by getting {
+        val jsMain by getting {
             resources.srcDir(webDir)
             dependencies {
                 implementation("io.kvision:kvision:$kvisionVersion")
                 implementation("io.kvision:kvision-bootstrap:$kvisionVersion")
-                implementation("io.kvision:kvision-bootstrap-css:$kvisionVersion")
                 api("io.kvision:jquery-kotlin:1.0.0")
             }
-            // kotlin.srcDir("build/generated-src/frontend")
         }
-        val frontendTest by getting {
+        val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
                 implementation("io.kvision:kvision-testutils:$kvisionVersion")
             }
-        }
-    }
-}
-
-afterEvaluate {
-    tasks {
-        create("frontendArchive", Jar::class).apply {
-            dependsOn("frontendBrowserProductionWebpack")
-            group = "package"
-            archiveAppendix.set("frontend")
-            val distribution =
-                project.tasks.getByName("frontendBrowserProductionWebpack", KotlinWebpack::class).destinationDirectory
-            from(distribution) {
-                include("*.*")
-            }
-            from(webDir)
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-            into("/public")
-            inputs.files(distribution, webDir)
-            outputs.file(archiveFile)
-            manifest {
-                attributes(
-                    mapOf(
-                        "Implementation-Title" to rootProject.name,
-                        "Implementation-Group" to rootProject.group,
-                        "Implementation-Version" to rootProject.version,
-                        "Timestamp" to System.currentTimeMillis(),
-                    )
-                )
-            }
-        }
-        getByName("backendProcessResources", Copy::class) {
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        }
-        getByName("bootJar", BootJar::class) {
-            dependsOn("frontendArchive", "backendMainClasses")
-            classpath = files(
-                kotlin.targets["backend"].compilations["main"].output.allOutputs +
-                        project.configurations["backendRuntimeClasspath"] +
-                        (project.tasks["frontendArchive"] as Jar).archiveFile
-            )
-        }
-        getByName("jar", Jar::class).apply {
-            dependsOn("bootJar")
-        }
-        getByName("bootRun", BootRun::class) {
-            dependsOn("backendMainClasses")
-            classpath = files(
-                kotlin.targets["backend"].compilations["main"].output.allOutputs +
-                        project.configurations["backendRuntimeClasspath"]
-            )
-        }
-        create("backendRun") {
-            dependsOn("bootRun")
-            group = "run"
         }
     }
 }

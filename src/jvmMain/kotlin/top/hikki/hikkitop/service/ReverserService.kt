@@ -1,4 +1,4 @@
-package top.hikki.hikkitop
+package top.hikki.hikkitop.service
 
 import TtsMain
 import org.springframework.beans.factory.config.ConfigurableBeanFactory

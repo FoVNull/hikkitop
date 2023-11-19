@@ -1,4 +1,4 @@
-package top.hikki.hikkitop
+package top.hikki.hikkitop.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,7 +15,7 @@ import java.util.*
 @Service
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Suppress("ACTUAL_WITHOUT_EXPECT")
-actual class XhrService: IXhrService{
+actual class XhrService: IXhrService {
 
     override suspend fun getBiVideoResponseJsonStr(url: String): String {
         val client = HttpClient.newBuilder().build()
@@ -27,8 +27,10 @@ actual class XhrService: IXhrService{
         val videoData = jsonObj.getJSONObject("data")
 
         val picResponse = withContext(Dispatchers.IO) {
-            client.send(HttpRequest.newBuilder().uri(URI.create(videoData.getString("pic"))).build(),
-                HttpResponse.BodyHandlers.ofByteArray())
+            client.send(
+                HttpRequest.newBuilder().uri(URI.create(videoData.getString("pic"))).build(),
+                HttpResponse.BodyHandlers.ofByteArray()
+            )
         }
 
         val returnJsonArray = JSONObject()
@@ -46,9 +48,11 @@ actual class XhrService: IXhrService{
             client.send(request, HttpResponse.BodyHandlers.ofByteArray())
         }
 
-        val videoPageResponse =  withContext(Dispatchers.IO) {
-            client.send(HttpRequest.newBuilder().uri(URI.create(videoUrl)).build(),
-                HttpResponse.BodyHandlers.ofString())
+        val videoPageResponse = withContext(Dispatchers.IO) {
+            client.send(
+                HttpRequest.newBuilder().uri(URI.create(videoUrl)).build(),
+                HttpResponse.BodyHandlers.ofString()
+            )
         }
         val title = if(videoPageResponse.body().contains("<title>"))
             videoPageResponse.body().split("<title>")[1].split("</title>")[0]

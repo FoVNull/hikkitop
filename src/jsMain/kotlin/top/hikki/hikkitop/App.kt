@@ -17,16 +17,19 @@ import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLTextAreaElement
+import top.hikki.hikkitop.Data.VideoSite
+import top.hikki.hikkitop.Model.IPGeoModel
+import top.hikki.hikkitop.Model.ReverserModel
+import top.hikki.hikkitop.Model.XhrModel
 import kotlin.js.Date
-import kotlin.js.Json
 import kotlin.js.RegExp
 
 val AppScope = CoroutineScope(window.asCoroutineDispatcher());
 
 class App: Application() {
     init {
-        io.kvision.require("bootstrap.min.css")
-        io.kvision.require("overall.css")
+        io.kvision.require("./bootstrap.min.css")
+        io.kvision.require("./overall.css")
     }
     override fun start() {
         root("hello"){
@@ -48,13 +51,11 @@ class App: Application() {
                     onClick {
                         val textAreaE = document.getElementById("textArea1") as HTMLTextAreaElement
                         AppScope.launch {
-                            // ReverserModel.ping("fe")
                             val barElement = document.getElementById("process-bar") as HTMLElement
                             barElement.hidden = false
                             barElement.innerHTML = "<p class='text-warning' style='float:left;'><b>processing...</b></p><img src='static/Pulse.gif' width='50px'>"
 
-                            ReverserModel.getAudioByText(textAreaE.value)
-                            val audioBase64 = ReverserModel.audioBase64
+                            val audioBase64 = ReverserModel.getAudioByText(textAreaE.value)
                             val audioContainer = document.getElementById("audio-container") as HTMLElement
                             audioContainer.innerHTML = "<audio id='audio-player' controls><source type='audio/wav' src='$audioBase64'></audio>"
                             barElement.innerHTML = "<img src='static/done.png' width='40px' style='float:left'><p class='text-success'><b>Done</b></p>"
@@ -68,15 +69,13 @@ class App: Application() {
                 button("Convert", className = "btn btn-secondary long-btn") {
                     onClick {
                         AppScope.launch {
-                            // ReverserModel.ping("fe")
                             val barElement = document.getElementById("process-bar") as HTMLElement
                             barElement.hidden = false
                             barElement.innerHTML = "<p class='text-warning' style='float:left;'><b>processing...</b></p><img src='static/Pulse.gif' width='50px'>"
 
                             val base64 = document.getElementById("recordingsList") as HTMLElement
                             val base64Str = base64.innerText.split(",")[1]
-                            ReverserModel.getAudioByFile(base64Str)
-                            val audioBase64 = ReverserModel.audioBase64
+                            val audioBase64 = ReverserModel.getAudioByFile(base64Str)
                             val audioContainer = document.getElementById("audio-container") as HTMLElement
                             audioContainer.innerHTML = "<audio id='audio-player' controls><source type='audio/wav' src='$audioBase64'></audio>"
                             barElement.innerHTML = "<img src='static/done.png' width='40px' style='float:left'><p class='text-success'><b>Done</b></p>"
@@ -90,8 +89,7 @@ class App: Application() {
             p("<font color='#D3D3D3'>This site won't save your IP information</font>", rich=true)
             AppScope.launch {
                 if(window.location.search!="") {
-                    IPGeoModel.getIPInfo(window.location.search)
-                    val ipInfo = JSON.parse<Json>(IPGeoModel.ipInfo)
+                    val ipInfo = IPGeoModel.getIPInfo(window.location.search)
                     val district = ipInfo["district"] as String?
                     val city = ipInfo["city"] as String?
                     val countryCode = ipInfo["countryCode"] as String?
@@ -209,8 +207,7 @@ val thumbnailsPanel = SimplePanel{
                                 check(kv.size == 2 ){"Query string parse wrong."}
                                 if(kv[0] == "v") {
                                     val imgURL = "https://i.ytimg.com/vi/${kv[1]}/maxresdefault.jpg"
-                                    XhrModel.getYtThumbResponse(imgURL, "https://www.youtube.com/watch?v=${kv[1]}")
-                                    val response = JSON.parse<Json>(XhrModel.responseJsonStr)
+                                    val response = XhrModel.getYtThumbResponse(imgURL, "https://www.youtube.com/watch?v=${kv[1]}")
                                     siteInfoElement.innerHTML = "<h5 class='modal-title'>${response["title"]}</h5>"
                                     imgURLElement.innerHTML = "<img src='${response["picBase64"]}' width='100%'>"
                                     downloadBtn.innerHTML = "<a download='${kv[1]}.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"+
@@ -226,8 +223,7 @@ val thumbnailsPanel = SimplePanel{
                             else
                                 url.split("/")[2]
 
-                            XhrModel.getBiVideoResponse("http://api.bilibili.com/x/web-interface/view?bvid=$bv")
-                            val response = JSON.parse<Json>(XhrModel.responseJsonStr)
+                            val response = XhrModel.getBiVideoResponse("http://api.bilibili.com/x/web-interface/view?bvid=$bv")
                             siteInfoElement.innerHTML = "<h5 class='modal-title'>${response["title"]} - Bilibili</h5>"
                             imgURLElement.innerHTML = "<img download='$bv.jpg' src='${response["picBase64"]}' width='100%'>"
                             downloadBtn.innerHTML = "<a download='$bv.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"

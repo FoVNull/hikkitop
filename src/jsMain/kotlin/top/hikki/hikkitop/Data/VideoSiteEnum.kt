@@ -1,4 +1,4 @@
-package top.hikki.hikkitop
+package top.hikki.hikkitop.Data
 
 enum class VideoSite{
     YOUTUBE,

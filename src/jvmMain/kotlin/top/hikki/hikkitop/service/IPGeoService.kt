@@ -1,4 +1,4 @@
-package top.hikki.hikkitop
+package top.hikki.hikkitop.service
 
 import IPGeoMain
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Suppress("ACTUAL_WITHOUT_EXPECT")
-actual class IPGeoService: IIPGeoService{
+actual class IPGeoService: IIPGeoService {
 
     val ipGeoApi = IPGeoMain()
 
