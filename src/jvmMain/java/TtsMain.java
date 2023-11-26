@@ -39,9 +39,9 @@ public class TtsMain {
 
     private static final String cuid = "JAVA";
 
-    public TtsMain() {
+    public TtsMain(String keyPath) {
         try {
-            InputStream inputStream = new FileInputStream("/home/key.yml");
+            InputStream inputStream = new FileInputStream(keyPath);
             Yaml yaml = new Yaml();
             Map<String, Map<String, String>> data = yaml.load(inputStream);
             appKey = data.get("baiduTTS").get("appKey");

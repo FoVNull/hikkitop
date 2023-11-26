@@ -12,9 +12,9 @@ import java.util.Map;
 public class IPGeoMain {
     private static IPGeolocationAPI api;
 
-    public IPGeoMain() {
+    public IPGeoMain(String keyPath) {
         try {
-            InputStream inputStream = new FileInputStream("/home/key.yml");
+            InputStream inputStream = new FileInputStream(keyPath);
             Yaml yaml = new Yaml();
             Map<String, Map<String, String>> data = yaml.load(inputStream);
             api = new IPGeolocationAPI(data.get("ipgeo").get("apiKey"));
