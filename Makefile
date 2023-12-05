@@ -2,7 +2,7 @@ stop_and_remove:
 	docker stop hikkitop_jar || true
 	docker rm hikkitop_jar || true
 
-run prod: stop_and_remove
+run_prod: stop_and_remove
 	docker run -d -p 80:8080 --name hikkitop_jar -e HIKKI_KEY=/app/key.yml -v /tmp:/app/tmp hypingdog/hikkitop:1.2.1
 	docker cp /app/key.yml hikkitop_jar:/app
 
