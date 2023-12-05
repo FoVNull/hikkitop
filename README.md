@@ -7,10 +7,16 @@ Just for fun. Domain: [hikki.top](http://hikki.top)
 
 ## Update logs
 
-- **2023-12-04 v1.2.1**
+- **2023-12-05 v1.2.1**
 > **LOGS**
 >- Use docker for deploy. Refactor whole CI process.
->
+>>- Setup 2 docker image (dev branch -> dev; main branch -> prod)
+>>- Setup makefile for deploy
+>- Fix all functions to support docker environment.
+
+> **Fix in next version**
+>- Fix reverse function. Only tts work know
+>- static resource couldn't be loaded
 
 - **2023-11-26 v1.2.0**
 > **LOGS**
