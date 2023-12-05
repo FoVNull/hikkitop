@@ -1,60 +1,68 @@
 version: 2.1
 
+executors:
+  docker-container-builder:
+    docker:
+      - image: docker:19.03.9-git
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
 jobs:
-  build-and-push:
+  build-jar:
     resource_class: medium
     docker:
       - image: cimg/openjdk:20.0
     steps:
       - checkout
       - run:
-          name: gradlew jar
+          name: build jar
           command: |
             chmod 555 ./gradlew
-            ./gradlew clean jar --stacktrace
-      - run:
-          name: Install tool pkgs
-          command: |
-            sudo apt update
-            sudo apt install rsync
-            sudo apt install sshpass
-      - run:
-          name: Push jar to alicloud
-          command: |
-            chmod 555 ./gradlew
+            ./gradlew clean build -x test -x jsBrowserTest --stacktrace
             VERSION=$(./gradlew printVersion |  cut -d " " -f 6 | sed 's/ //g')
-            echo "release version:"${VERSION}
-            TARGET="/app/"
+            echo ${VERSION} > /tmp/version.txt
+            mkdir -p /tmp/libs
             SOURCE=$(echo "./build/libs/hikkitop-"${VERSION}".jar" | sed 's/ //g')
-            ssh-keyscan -H $ALI_SWAS_HOST >> ~/.ssh/known_hosts
-            sshpass -p $ALI_SWAS_PASS rsync --progress -avz ${SOURCE} -e ssh $ALI_SWAS_USER@$ALI_SWAS_HOST:${TARGET}
+            cp ${SOURCE} /tmp/libs/hikkitop.jar
+            cp ./src/jvmMain/resources/AudioReverser.py /tmp/AudioReverser.py
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - version.txt
+            - AudioReverser.py
+            - libs/hikkitop.jar
 
-  deploy:
-    docker:
-      - image: cimg/base:2023.06
+  build-and-push-image:
+    resource_class: small
+    executor: docker-container-builder
     steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - attach_workspace:
+          at: /tmp
       - run:
-          name: Install tool pkgs
+          name: docker build
           command: |
-            sudo apt update
-            sudo apt install sshpass
+            VERSION="$(cat /tmp/version.txt)"
+            DOCKER_BUILDKIT=1 docker build --build-arg VERSION="$VERSION" --tag hikkitop:latest -f ./Dockerfile /tmp
       - run:
-          name: Deploy over SSH
+          name: push image to docker hub
           command: |
-            sshpass -p $ALI_SWAS_PASS ssh $ALI_SWAS_USER@$ALI_SWAS_HOST "sh /app/hikkitop/scripts/deployer.sh"
+            VERSION="$(cat /tmp/version.txt)"
+            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
+              VERSION=dev
+            fi
+            docker tag hikkitop:latest hypingdog/hikkitop:"$VERSION"
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
+            docker push hypingdog/hikkitop:"$VERSION"
 
 workflows:
   build-and-deploy:
     jobs:
-      - build-and-push:
-        filters:
-          branches:
-            only:
-              - main
-      - deploy:
+      - build-jar
+      - build-and-push-image:
           requires:
-            - build-and-push
-          filters:
-            branches:
-              only:
-                - skip
+            - build-jar
