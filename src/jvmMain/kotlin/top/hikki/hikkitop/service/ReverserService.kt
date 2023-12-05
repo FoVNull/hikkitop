@@ -16,7 +16,7 @@ actual class ReverserService : IReverserService {
     @Autowired
     lateinit var env: Environment
 
-    val prefix = "/tmp/"
+    val prefix = "/app/tmp"
     val suffix = "wav"
 
     override suspend fun ping(message: String): List<String> {

@@ -25,10 +25,12 @@ jobs:
             mkdir -p /tmp/libs
             SOURCE=$(echo "./build/libs/hikkitop-"${VERSION}".jar" | sed 's/ //g')
             cp ${SOURCE} /tmp/libs/hikkitop.jar
+            cp ./src/jvmMain/resources/AudioReverser.py /tmp/AudioReverser.py
       - persist_to_workspace:
           root: /tmp
           paths:
             - version.txt
+            - AudioReverser.py
             - libs/hikkitop.jar
 
   build-and-push-image:
@@ -50,6 +52,9 @@ jobs:
           name: push image to docker hub
           command: |
             VERSION="$(cat /tmp/version.txt)"
+            if [ "${CIRCLE_BRANCH}" = "dev" ]; then
+              VERSION=dev
+            fi
             docker tag hikkitop:latest hypingdog/hikkitop:"$VERSION"
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker push hypingdog/hikkitop:"$VERSION"
@@ -57,15 +62,7 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - build-jar:
-          filters:
-            branches:
-              only:
-                - dev
+      - build-jar
       - build-and-push-image:
           requires:
             - build-jar
-          filters:
-            branches:
-              only:
-                - dev
