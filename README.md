@@ -7,6 +7,17 @@ Just for fun. Domain: [hikki.top](http://hikki.top)
 
 ## Update logs
 
+- **2023-12-08 v1.2.2**
+> **LOGS**
+>- Fix several bugs.
+>>- Active python support in image.
+>>- Fix path of static resources.
+>>- Support new bilibili api.
+>- Fix all functions to support docker environment.
+
+> **Fix in next version**
+>- Recorder function
+
 - **2023-12-05 v1.2.1**
 > **LOGS**
 >- Use docker for deploy. Refactor whole CI process.
@@ -15,7 +26,7 @@ Just for fun. Domain: [hikki.top](http://hikki.top)
 >- Fix all functions to support docker environment.
 
 > **Fix in next version**
->- Fix reverse function. Only tts work know
+>- Fix reverse function. Only tts works now
 >- static resource couldn't be loaded
 
 - **2023-11-26 v1.2.0**
