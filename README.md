@@ -13,11 +13,6 @@
 | main | [![FoVNull](https://circleci.com/gh/FoVNull/hikkitop/tree/main.svg?style=svg)](https://app.circleci.com/pipelines/circleci/T87G52Sz4NaoszoqfNn36C/HU4J275oN83vJYdquG8DSD?branch=main) |
 | dev  | [![FoVNull](https://circleci.com/gh/FoVNull/hikkitop/tree/dev.svg?style=svg)](https://app.circleci.com/pipelines/circleci/T87G52Sz4NaoszoqfNn36C/HU4J275oN83vJYdquG8DSD?branch=dev)   |
 
-| Env  | CI status                                                                                                                                                                 |
-|:-----|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| main | [![FoVNull](https://circleci.com/gh/FoVNull/hikkitop/tree/main.svg?style=svg)](https://app.circleci.com/pipelines/circleci/T87G52Sz4NaoszoqfNn36C/HU4J275oN83vJYdquG8DSD) |
-| dev  | [![FoVNull](https://circleci.com/gh/FoVNull/hikkitop/tree/dev.svg?style=svg)](https://app.circleci.com/pipelines/circleci/T87G52Sz4NaoszoqfNn36C/HU4J275oN83vJYdquG8DSD)  |
-
 Just for fun. Domain: [hikki.top](http://hikki.top)
 
 ## Update logs
