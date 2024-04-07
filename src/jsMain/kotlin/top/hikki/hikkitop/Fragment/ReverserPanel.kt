@@ -67,6 +67,11 @@ internal val reverserTabPanel = SimplePanel {
                     }
                 }
             }
+            div() {
+                setAttribute("hidden", "")
+                id = "process-bar"
+            }
+            div() { id = "audio-container" }
         }
         div(className = "tab-pane fade") {
             id = "recorder"
