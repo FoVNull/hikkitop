@@ -8,7 +8,10 @@ import io.kvision.startApplication
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
-import top.hikki.hikkitop.Fragment.*
+import top.hikki.hikkitop.Fragment.IPInfoPanel
+import top.hikki.hikkitop.Fragment.regexPanel
+import top.hikki.hikkitop.Fragment.reverserTabPanel
+import top.hikki.hikkitop.Fragment.thumbnailsPanel
 
 val AppScope = CoroutineScope(window.asCoroutineDispatcher());
 
@@ -28,22 +31,21 @@ class App: Application() {
             buildToolkit(cardList)
             add(toolkitPanel)
         }
-        root("reverser"){
-            add(reverserPanel)
+
+        root("reverser-tab") {
+            add(reverserTabPanel)
         }
-        root("recoder-btn"){
-            add(recordPanel)
-        }
-        root("ip-info"){
+
+        root("ip-info") {
             add(IPInfoPanel)
         }
-        root("thumbnails-download"){
+        root("thumbnails-download") {
             add(thumbnailsPanel)
         }
-        root("regex-playground"){
+        root("regex-playground") {
             add(regexPanel)
         }
-        root("footer"){
+        root("footer") {
             add(footerPanel)
         }
     }
