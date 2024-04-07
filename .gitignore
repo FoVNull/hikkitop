@@ -1,6 +1,8 @@
 build/
 out/
+bin/
 *.idea
+.vscode
 .gradle
 .kotlin-js-store
 /refresh.sh
