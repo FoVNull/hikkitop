@@ -21,6 +21,13 @@ class App: Application() {
         root("hello"){
             add(topPanel)
         }
+        root("search-box") {
+            add(searchboxPanel)
+        }
+        root("toolkit") {
+            buildToolkit(cardList)
+            add(toolkitPanel)
+        }
         root("reverser"){
             add(reverserPanel)
         }
