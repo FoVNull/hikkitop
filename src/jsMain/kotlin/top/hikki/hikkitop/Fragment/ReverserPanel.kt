@@ -52,51 +52,80 @@ internal val reverserTabPanel = SimplePanel {
                     onClick {
                         val textAreaE = document.getElementById("textArea1") as HTMLTextAreaElement
                         AppScope.launch {
-                            val barElement = document.getElementById("process-bar") as HTMLElement
-                            barElement.hidden = false
-                            barElement.innerHTML =
-                                "<p class='text-warning' style='float:left;'><b>processing...</b></p><img src='static/Pulse.gif' width='50px'>"
+                            if (textAreaE.value == "") {
+                                textAreaE.setCustomValidity("Input couldn't be empty")
+                                textAreaE.reportValidity()
+                            } else {
+                                val barElement = document.getElementById("process-bar-1") as HTMLElement
+                                barElement.hidden = false
+                                barElement.innerHTML =
+                                    "<p class='text-warning' style='float:left;'><b>processing...</b></p><img src='static/Pulse.gif' width='50px'>"
 
-                            val audioBase64 = ReverserModel.getAudioByText(textAreaE.value)
-                            val audioContainer = document.getElementById("audio-container") as HTMLElement
-                            audioContainer.innerHTML =
-                                "<audio id='audio-player' controls><source type='audio/wav' src='$audioBase64'></audio>"
-                            barElement.innerHTML =
-                                "<img src='static/done.png' width='40px' style='float:left'><p class='text-success'><b>Done</b></p>"
+                                val audioBase64 = ReverserModel.getAudioByText(textAreaE.value)
+                                val audioContainer = document.getElementById("audio-container-1") as HTMLElement
+                                audioContainer.innerHTML =
+                                    "<audio id='audio-player' controls><source type='audio/wav' src='$audioBase64'></audio>"
+                                barElement.innerHTML =
+                                    "<img src='static/done.png' width='40px' style='float:left'><p class='text-success'><b>Done</b></p>"
+                            }
                         }
                     }
                 }
             }
             div() {
                 setAttribute("hidden", "")
-                id = "process-bar"
+                id = "process-bar-1"
             }
-            div() { id = "audio-container" }
+            div() { id = "audio-container-1" }
         }
         div(className = "tab-pane fade") {
             id = "recorder"
             role = "tabpanel"
-            div(className = "alert alert-dismissible alert-danger") {
-                strong("Unavailable now")
+            div() {
+                id = "recorder"
+                div {
+                    id = "controls"
+                    button("Start", className = "btn btn-sm btn-info") {
+                        id = "record-btn"
+                    }
+                    button("Pause", className = "btn btn-sm btn-danger") {
+                        id = "pause-btn"
+                        disabled = true
+                    }
+                    button("Stop", className = "btn btn-sm btn-primary") {
+                        id = "stop-btn"
+                        disabled = true
+
+                    }
+                }
             }
-//            div(className = "btn-set") {
-//                button("Convert", className = "btn btn-secondary long-btn") {
-//                    onClick {
-//                        AppScope.launch {
-//                            val barElement = document.getElementById("process-bar") as HTMLElement
-//                            barElement.hidden = false
-//                            barElement.innerHTML = "<p class='text-warning' style='float:left;'><b>processing...</b></p><img src='static/Pulse.gif' width='50px'>"
-//
-//                            val base64 = document.getElementById("recordingsList") as HTMLElement
-//                            val base64Str = base64.innerText.split(",")[1]
-//                            val audioBase64 = ReverserModel.getAudioByFile(base64Str)
-//                            val audioContainer = document.getElementById("audio-container") as HTMLElement
-//                            audioContainer.innerHTML = "<audio id='audio-player' controls><source type='audio/wav' src='$audioBase64'></audio>"
-//                            barElement.innerHTML = "<img src='static/done.png' width='40px' style='float:left'><p class='text-success'><b>Done</b></p>"
-//                        }
-//                    }
-//                }
-//            }
+            div {
+                id = "recordingsList"
+                setAttribute("hidden", "")
+            }
+            div(className = "btn-set") {
+                button("Convert", className = "btn btn-secondary long-btn") {
+                    onClick {
+                        AppScope.launch {
+                            val barElement = document.getElementById("process-bar-2") as HTMLElement
+                            barElement.hidden = false
+                            barElement.innerHTML = "<p class='text-warning' style='float:left;'><b>processing...</b></p><img src='static/Pulse.gif' width='50px'>"
+
+                            val base64 = document.getElementById("recordingsList") as HTMLElement
+                            val base64Str = base64.innerText.split(",")[1]
+                            val audioBase64 = ReverserModel.getAudioByFile(base64Str)
+                            val audioContainer = document.getElementById("audio-container-2") as HTMLElement
+                            audioContainer.innerHTML = "<audio id='audio-player' controls><source type='audio/wav' src='$audioBase64'></audio>"
+                            barElement.innerHTML = "<img src='static/done.png' width='40px' style='float:left'><p class='text-success'><b>Done</b></p>"
+                        }
+                    }
+                }
+            }
+            div() {
+                setAttribute("hidden", "")
+                id = "process-bar-2"
+            }
+            div() { id = "audio-container-2" }
         }
     }
 }
