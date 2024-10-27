@@ -19,7 +19,7 @@ jobs:
           name: build jar
           command: |
             chmod 555 ./gradlew
-            ./gradlew clean build -x test -x jsBrowserTest --stacktrace
+            ./gradlew clean jar -x test -x jsBrowserTest --stacktrace
             VERSION=$(./gradlew printVersion |  cut -d " " -f 6 | sed 's/ //g')
             echo ${VERSION} > /tmp/version.txt
             mkdir -p /tmp/libs

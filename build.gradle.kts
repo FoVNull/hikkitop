@@ -35,7 +35,6 @@ val webDir = file("src/jsMain/web")
 val mainClassName = "top.hikki.hikkitop.MainKt"
 
 kotlin {
-    jvmToolchain(21)
     jvm {
         withJava()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
