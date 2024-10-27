@@ -20,7 +20,9 @@ jobs:
           command: |
             chmod 555 ./gradlew
             ./gradlew clean jar -x test -x jsBrowserTest --stacktrace
+            echo ./gradlew printVersion
             VERSION=$(./gradlew printVersion |  cut -d " " -f 6 | sed 's/ //g')
+            echo ${VERSION}
             echo ${VERSION} > /tmp/version.txt
             mkdir -p /tmp/libs
             SOURCE=$(echo "./build/libs/hikkitop-"${VERSION}".jar" | sed 's/ //g')
