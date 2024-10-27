@@ -1,5 +1,5 @@
-FROM eclipse-temurin:20-jre-alpine
-ENV APP_DIR /app
+FROM eclipse-temurin:21-jre-alpine
+ENV APP_DIR /
 
 WORKDIR ${APP_DIR}
 

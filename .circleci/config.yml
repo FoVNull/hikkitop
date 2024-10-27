@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-container-builder:
     docker:
-      - image: docker:19.03.9-git
+      - image: docker:25.0.3-git
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -12,7 +12,7 @@ jobs:
   build-jar:
     resource_class: medium
     docker:
-      - image: cimg/openjdk:20.0
+      - image: cimg/openjdk:21.0
     steps:
       - checkout
       - run:
@@ -39,7 +39,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
+          version: 25.0.3
           docker_layer_caching: true
       - attach_workspace:
           at: /tmp

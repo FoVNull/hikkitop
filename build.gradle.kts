@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     val kotlinVersion: String by System.getProperties()
@@ -11,7 +11,7 @@ plugins {
     id("org.springframework.boot") version System.getProperty("springBootVersion")
 }
 
-version = "1.3.1"
+version = "1.3.2"
 group = "top.hikki"
 
 task("printVersion") {
@@ -35,33 +35,19 @@ val webDir = file("src/jsMain/web")
 val mainClassName = "top.hikki.hikkitop.MainKt"
 
 kotlin {
+    jvmToolchain(21)
     jvm {
         withJava()
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_20.toString()
-                freeCompilerArgs = listOf("-Xjsr305=strict")
-            }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
         }
     }
     js(IR) {
         browser {
-            runTask {
-                mainOutputFileName = "main.bundle.js"
+            commonWebpackConfig {
+                outputFileName = "main.bundle.js"
                 sourceMaps = false
-                devServer = KotlinWebpackConfig.DevServer(
-                    open = false,
-                    port = 80,
-                    proxy = mutableMapOf(
-                        "/kv/*" to "http://localhost:8080",
-                        "/kvsse/*" to "http://localhost:8080",
-                        "/kvws/*" to mapOf("target" to "ws://localhost:8080", "ws" to true)
-                    ),
-                    static = mutableListOf("${layout.buildDirectory.asFile.get()}/processedResources/js/main")
-                )
-            }
-            webpackTask {
-                mainOutputFileName = "main.bundle.js"
             }
             testTask {
                 useKarma {
@@ -97,8 +83,8 @@ kotlin {
                 implementation("org.springframework.boot:spring-boot-starter-security")
                 implementation("io.ipgeolocation:ipgeolocation:1.0.12")
                 implementation("org.apache.commons:commons-lang3:3.0")
-                implementation("org.json:json:20220924")
-                implementation("org.yaml:snakeyaml:1.33")
+                implementation("org.json:json:20240303")
+                implementation("org.yaml:snakeyaml:2.3")
             }
         }
         val jvmTest by getting {
@@ -113,7 +99,9 @@ kotlin {
             dependencies {
                 implementation("io.kvision:kvision:$kvisionVersion")
                 implementation("io.kvision:kvision-bootstrap:$kvisionVersion")
-                api("io.kvision:jquery-kotlin:1.0.0")
+                implementation("io.kvision:kvision-state:$kvisionVersion")
+                implementation("io.kvision:kvision-fontawesome:$kvisionVersion")
+                implementation("io.kvision:kvision-i18n:$kvisionVersion")
             }
         }
         val jsTest by getting {
