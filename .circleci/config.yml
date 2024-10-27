@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-container-builder:
     docker:
-      - image: docker:25.0.3-git
+      - image: docker:20.10.24-git
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -40,7 +40,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 25.0.3
+          version: 20.10.24
           docker_layer_caching: true
       - attach_workspace:
           at: /tmp
