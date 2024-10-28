@@ -10,7 +10,7 @@ executors:
 
 jobs:
   build-jar:
-    resource_class: medium
+    resource_class: medium+
     docker:
       - image: cimg/openjdk:21.0
     steps:
