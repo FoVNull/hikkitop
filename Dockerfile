@@ -4,7 +4,7 @@ ENV APP_DIR /
 WORKDIR ${APP_DIR}
 
 RUN apk add --no-cache python3 py3-pip && \
-    pip install pydub
+    /usr/bin/pip install pydub
 
 ENV PYTHON=/usr/bin/python3
 
