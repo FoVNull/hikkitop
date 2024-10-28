@@ -1,13 +1,11 @@
 package top.hikki.hikkitop.Model
 
-import io.kvision.remote.getService
-
-import top.hikki.hikkitop.service.IIPGeoService
+import top.hikki.hikkitop.service.IPGeoService
 import kotlin.js.Json
 
 object IPGeoModel {
 
-    private val ipGeoService = getService<IIPGeoService>()
+    private val ipGeoService = IPGeoService()
 
     suspend fun getIPInfo(): Json{
         return JSON.parse(ipGeoService.getIPInfo())

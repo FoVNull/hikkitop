@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-container-builder:
     docker:
-      - image: docker:19.03.9-git
+      - image: docker:20.10.24-git
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -12,15 +12,16 @@ jobs:
   build-jar:
     resource_class: medium+
     docker:
-      - image: cimg/openjdk:20.0
+      - image: cimg/openjdk:21.0
     steps:
       - checkout
       - run:
           name: build jar
           command: |
             chmod 555 ./gradlew
-            ./gradlew clean build -x test -x jsBrowserTest --stacktrace
+            ./gradlew clean jar -x test -x jsBrowserTest --stacktrace
             VERSION=$(./gradlew printVersion |  cut -d " " -f 6 | sed 's/ //g')
+            VERSION=$(echo $VERSION | grep -Po '[0-9.]' | awk '{printf "%s", $0} END {print ""}')
             echo ${VERSION} > /tmp/version.txt
             mkdir -p /tmp/libs
             SOURCE=$(echo "./build/libs/hikkitop-"${VERSION}".jar" | sed 's/ //g')
@@ -39,7 +40,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
+          version: 20.10.24
           docker_layer_caching: true
       - attach_workspace:
           at: /tmp

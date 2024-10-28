@@ -1,12 +1,11 @@
 package top.hikki.hikkitop.Model
 
-import io.kvision.remote.getService
-import top.hikki.hikkitop.service.IXhrService
+import top.hikki.hikkitop.service.XhrService
 import kotlin.js.Json
 
 object XhrModel {
 
-    private val xhrService = getService<IXhrService>()
+    private val xhrService = XhrService()
 
     suspend fun getBiVideoResponse(url: String): Json {
         return JSON.parse(xhrService.getBiVideoResponseJsonStr(url))
