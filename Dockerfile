@@ -8,7 +8,7 @@ RUN apk add --no-cache python3 py3-pip && \
     . /path/to/hikkitop/bin/activate && \
     pip install pydub
 
-ENV PYTHON=/usr/bin/python3
+ENV PYTHON=/path/to/hikkitop/bin
 
 ARG VERSION
 ENV VERSION_ENV=${VERSION}
