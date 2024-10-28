@@ -4,7 +4,9 @@ ENV APP_DIR /
 WORKDIR ${APP_DIR}
 
 RUN apk add --no-cache python3 py3-pip && \
-    /usr/bin/pip install pydub
+    python3 -m venv /path/to/hikkitop && \
+    . /path/to/hikkitop/bin/activate && \
+    pip install pydub
 
 ENV PYTHON=/usr/bin/python3
 
