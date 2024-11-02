@@ -59,11 +59,10 @@ internal val thumbnailsPanel = SimplePanel {
                             }
                         }
                         VideoSite.BILIBILI -> {
-                            val fileName = (1..8).map{(('a'..'z') + ('A'..'Z') + ('0'..'9')).random()}.joinToString("")
                             val response = XhrModel.getBiVideoResponse(url)
                             siteInfoElement.innerHTML = "<h5 class='modal-title'>${response["title"]} - Bilibili</h5>"
-                            imgURLElement.innerHTML = "<img download='$fileName .jpg' src='${response["picBase64"]}' width='100%'>"
-                            downloadBtn.innerHTML = "<a download='$fileName .jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"
+                            imgURLElement.innerHTML = "<img download='${response["bvid"]}.jpg' src='${response["picBase64"]}' width='100%'>"
+                            downloadBtn.innerHTML = "<a download='${response["bvid"]}.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"
                         }
                         VideoSite.UNKNOWN -> {
                             siteInfoElement.innerHTML = "<h5 class='modal-title'>Unknown site</h5>"

@@ -30,7 +30,9 @@ actual class XhrService: IXhrService {
         var response = withContext(Dispatchers.IO) {
             client.send(request, HttpResponse.BodyHandlers.ofString())
         }
-        logger.info("Response from api.bilibili.com: ${response.body()}")
+        if (response.statusCode() != 200) {
+            logger.info("Response from api.bilibili.com: ${response.body()}")
+        }
 
         val jsonObj = JSONObject(response.body())
         val videoData = jsonObj.getJSONObject("data")
@@ -45,6 +47,7 @@ actual class XhrService: IXhrService {
         val returnJsonArray = JSONObject()
         returnJsonArray.put("picBase64", "data:image/jpeg;base64,${Base64.getEncoder().encodeToString(picResponse.body())}")
         returnJsonArray.put("title", videoData.getString("title"))
+        returnJsonArray.put("bvid", videoData.getString("bvid"))
 
         return returnJsonArray.toString()
     }
