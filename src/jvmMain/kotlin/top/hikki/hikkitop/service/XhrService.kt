@@ -54,7 +54,7 @@ actual class XhrService: IXhrService {
     }
 
     override suspend fun getYtThumbResponseJsonStr(url: String, videoUrl:String): String {
-        logger.info("User input youtube link: $url")
+        logger.info("youtube link: $url")
         val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder().uri(URI.create(url)).build()
 
