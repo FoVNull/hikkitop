@@ -13,4 +13,15 @@
     <appender-ref ref="STDOUT" />
   </root>
 
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>/app/logs/hikkitop.log</file>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="info">
+    <appender-ref ref="FILE" />
+  </root>
+
 </configuration>

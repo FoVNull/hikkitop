@@ -6,10 +6,10 @@ import kotlinx.browser.document
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.url.URL
 import top.hikki.hikkitop.AppScope
 import top.hikki.hikkitop.Data.VideoSite
 import top.hikki.hikkitop.Model.XhrModel
-import kotlin.js.RegExp
 
 internal val thumbnailsPanel = SimplePanel {
     h5("Support bilibili and youtube.", rich=true)
@@ -41,13 +41,13 @@ internal val thumbnailsPanel = SimplePanel {
                         site = VideoSite.BILIBILI
                     }
 
-                    val queryString: String = url.split("?")[1]
                     when(site){
                         VideoSite.YOUTUBE -> {
+                            val queryString = URL(url).search.substring(1)
                             val params = queryString.split("&")
                             for(param in params){
                                 val kv = param.split("=")
-                                check(kv.size == 2 ){"Query string parse wrong."}
+                                check( kv.size == 2 ){ "Query string parse wrong."}
                                 if(kv[0] == "v") {
                                     val imgURL = "https://i.ytimg.com/vi/${kv[1]}/maxresdefault.jpg"
                                     val response = XhrModel.getYtThumbResponse(imgURL, "https://www.youtube.com/watch?v=${kv[1]}")
@@ -60,16 +60,10 @@ internal val thumbnailsPanel = SimplePanel {
                             }
                         }
                         VideoSite.BILIBILI -> {
-                            val pattern = RegExp("[a-zA-z]+://")
-                            val bv = if(pattern.test(url))
-                                url.split("://")[1].split("/")[2]
-                            else
-                                url.split("/")[2]
-
-                            val response = XhrModel.getBiVideoResponse("http://api.bilibili.com/x/web-interface/view?bvid=$bv")
+                            val response = XhrModel.getBiVideoResponse(url)
                             siteInfoElement.innerHTML = "<h5 class='modal-title'>${response["title"]} - Bilibili</h5>"
-                            imgURLElement.innerHTML = "<img download='$bv.jpg' src='${response["picBase64"]}' width='100%'>"
-                            downloadBtn.innerHTML = "<a download='$bv.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"
+                            imgURLElement.innerHTML = "<img download='${response["bvid"]}.jpg' src='${response["picBase64"]}' width='100%'>"
+                            downloadBtn.innerHTML = "<a download='${response["bvid"]}.jpg' href='${response["picBase64"]}'><button class='btn btn-primary'>Save</button></a>"
                         }
                         VideoSite.UNKNOWN -> {
                             siteInfoElement.innerHTML = "<h5 class='modal-title'>Unknown site</h5>"

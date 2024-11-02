@@ -6,7 +6,8 @@ WORKDIR ${APP_DIR}
 RUN apk add --no-cache python3 py3-pip && \
     python3 -m venv /path/to/hikkitop && \
     . /path/to/hikkitop/bin/activate && \
-    pip install pydub
+    pip install pydub && \
+    mkdir -p /app/logs && touch /app/logs/hikkitop.log && chmod -R 777 /app/logs
 
 ENV PATH="/path/to/hikkitop/bin:$PATH"
 
