@@ -20,6 +20,7 @@ actual class XhrService: IXhrService {
     private final val logger = LoggerService()
 
     override suspend fun getBiVideoResponseJsonStr(url: String): String {
+        logger.info("User input bilibili link: $url")
         val bvStr = URI(url).path.split("/")[2]
 
         val client = HttpClient.newBuilder().build()
@@ -53,6 +54,7 @@ actual class XhrService: IXhrService {
     }
 
     override suspend fun getYtThumbResponseJsonStr(url: String, videoUrl:String): String {
+        logger.info("User input youtube link: $url")
         val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder().uri(URI.create(url)).build()
 
