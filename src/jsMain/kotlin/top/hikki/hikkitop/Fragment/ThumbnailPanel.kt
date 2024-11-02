@@ -6,6 +6,7 @@ import kotlinx.browser.document
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.url.URL
 import top.hikki.hikkitop.AppScope
 import top.hikki.hikkitop.Data.VideoSite
 import top.hikki.hikkitop.Model.XhrModel
@@ -40,13 +41,13 @@ internal val thumbnailsPanel = SimplePanel {
                         site = VideoSite.BILIBILI
                     }
 
-                    val queryString: String = url.split("?")[1]
                     when(site){
                         VideoSite.YOUTUBE -> {
+                            val queryString = URL(url).search.substring(1)
                             val params = queryString.split("&")
                             for(param in params){
                                 val kv = param.split("=")
-                                check(kv.size == 2 ){"Query string parse wrong."}
+                                check( kv.size == 2 ){ "Query string parse wrong."}
                                 if(kv[0] == "v") {
                                     val imgURL = "https://i.ytimg.com/vi/${kv[1]}/maxresdefault.jpg"
                                     val response = XhrModel.getYtThumbResponse(imgURL, "https://www.youtube.com/watch?v=${kv[1]}")
