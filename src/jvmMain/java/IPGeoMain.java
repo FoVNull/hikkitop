@@ -3,6 +3,7 @@ import io.ipgeolocation.api.GeolocationParams;
 import io.ipgeolocation.api.IPGeolocationAPI;
 import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
+import top.hikki.hikkitop.service.LoggerService;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,6 +12,8 @@ import java.util.Map;
 
 public class IPGeoMain {
     private static IPGeolocationAPI api;
+
+    private final LoggerService logger = new LoggerService();
 
     public IPGeoMain(String keyPath) {
         try {

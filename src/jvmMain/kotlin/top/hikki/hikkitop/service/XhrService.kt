@@ -17,12 +17,15 @@ import java.util.*
 @Suppress("ACTUAL_WITHOUT_EXPECT")
 actual class XhrService: IXhrService {
 
+    private final val logger = LoggerService()
+
     override suspend fun getBiVideoResponseJsonStr(url: String): String {
         val client = HttpClient.newBuilder().build()
         var request = HttpRequest.newBuilder().uri(URI.create(url)).build()
         var response = withContext(Dispatchers.IO) {
             client.send(request, HttpResponse.BodyHandlers.ofString())
         }
+        logger.info("Response from api.bilibili.com: ${response.body()}")
         if (response.statusCode() == 307) {
             val headers = response.headers().map() as Map<String, List<String>>
             request = HttpRequest.newBuilder().uri(URI.create(headers["location"]!!.first())).build()
@@ -30,6 +33,7 @@ actual class XhrService: IXhrService {
                 client.send(request, HttpResponse.BodyHandlers.ofString())
             }
         }
+        logger.info("Response from api.bilibili.com: ${response.body()}")
 
         val jsonObj = JSONObject(response.body())
         val videoData = jsonObj.getJSONObject("data")

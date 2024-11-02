@@ -11,7 +11,7 @@ plugins {
     id("org.springframework.boot") version System.getProperty("springBootVersion")
 }
 
-version = "1.3.2"
+version = "1.3.3"
 group = "top.hikki"
 
 task("printVersion") {
