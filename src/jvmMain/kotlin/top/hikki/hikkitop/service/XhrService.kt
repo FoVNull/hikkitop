@@ -22,12 +22,13 @@ actual class XhrService: IXhrService {
     override suspend fun getBiVideoResponseJsonStr(url: String): String {
         val client = HttpClient.newBuilder().build()
         var request = HttpRequest.newBuilder().uri(URI.create(url)).build()
+        logger.info("Send request to api.bilibili.com: $request")
         var response = withContext(Dispatchers.IO) {
             client.send(request, HttpResponse.BodyHandlers.ofString())
         }
-        logger.info("Response from api.bilibili.com: ${response.body()}")
         if (response.statusCode() == 307) {
             val headers = response.headers().map() as Map<String, List<String>>
+            logger.info("307 location: ${headers["location"]}")
             request = HttpRequest.newBuilder().uri(URI.create(headers["location"]!!.first())).build()
             response = withContext(Dispatchers.IO) {
                 client.send(request, HttpResponse.BodyHandlers.ofString())
